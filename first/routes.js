@@ -16,14 +16,21 @@ const requestHandler = (req, res) => {
         req.on('end', () => {
             const parseBody = Buffer.concat(body).toString();
             const message = parseBody.split('=')[1];
-            fs.writeFile('message.txt', message, err => {
+            fs.writeFile('message.txt', message, (err) => {
+                if (err) {
+                    console.error(err);
+                    res.statusCode = 500;
+                    res.write('<html><body><h1>Error writing to file</h1></body></html>');
+                    return res.end();
+                }
                 res.statusCode = 302;
                 res.setHeader('Location', '/');
                 return res.end();
             });
+
         });
         // fs.writeFileSync('message.txt',"dummy");
-
+         return;
     }
 
     res.setHeader('Content-Type', 'text/html');
