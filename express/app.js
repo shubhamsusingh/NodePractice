@@ -13,7 +13,7 @@ app.use(bodyparse.urlencoded({extended:false}));
    
 //     next(); // Allows the request to continue to the next middleware in line
 // });
-app.use(adminRoutes);
+app.use('/admin',adminRoutes);
 app.use(shopRouts);
 
 app.use((req,res,next)=>{
