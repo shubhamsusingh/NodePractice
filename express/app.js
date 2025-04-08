@@ -5,8 +5,10 @@ const pathImp=require('path');
 
 
 const app=express();
+app.set('view engine','pug');
+app.set('views','views');
 
-const adminRoutes=require('./routes/admin');
+const adminData=require('./routes/admin');
 const shopRouts= require('./routes/shop');
 const path = require('./utils/path');
 
@@ -17,7 +19,7 @@ app.use(express.static(pathImp.join(__dirname,'public')));
    
 //     next(); // Allows the request to continue to the next middleware in line
 // });
-app.use('/admin',adminRoutes);
+app.use('/admin',adminData.routes);
 app.use(shopRouts);
 
 app.use((req,res,next)=>{
