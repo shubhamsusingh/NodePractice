@@ -1,15 +1,8 @@
 const path=require('path');
 const express=require('express');
-const rootDir=require('../utils/path');
-const adminData=require('./admin');
+const productController=require('../controllers/products');
 
 const router=express.Router();
 
-router.get('/',(req,res,next)=>{
-    // console.log(adminData.products);
-    const product=adminData.products;
-    // res.sendFile(path.join(rootDir,'views','shop.html'));
-    res.render('shop',{prods:product,pageTitle:'Shop',path:"/",hasProducts : product.length > 0, activeShoap:true,productCSS:true});
-    
-});
+router.get('/',productController.getProducts);
 module.exports=router;
