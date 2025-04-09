@@ -7,7 +7,9 @@ const expressHbs=require('express-handlebars');
 
 const app=express();
 const hbs = expressHbs.create({
-    defaultLayout: false  // Disable the default layout
+    layoutsDir:'views/layouts',
+    defaultLayout: 'main-layout',
+    extname:'handlebars'  // Disable the default layout
  });
  
 app.engine('handlebars', hbs.engine);
@@ -15,8 +17,8 @@ app.engine('handlebars', hbs.engine);
 app.set('view engine','handlebars');
 app.set('views','views');
 
-// const adminData=require('./routes/admin');
-// const shopRouts= require('./routes/shop');
+const adminData=require('./routes/admin');
+const shopRouts= require('./routes/shop');
 const path = require('./utils/path');
 
 
@@ -26,8 +28,8 @@ app.use(express.static(pathImp.join(__dirname,'public')));
    
 //     next(); // Allows the request to continue to the next middleware in line
 // });
-// app.use('/admin',adminData.routes);
-// app.use(shopRouts);
+app.use('/admin',adminData.routes);
+app.use(shopRouts);
 
 app.use((req,res,next)=>{
     // res.status(404).send('<h1>Page not found</h1>')

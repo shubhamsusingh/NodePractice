@@ -9,7 +9,7 @@ router.get('/',(req,res,next)=>{
     // console.log(adminData.products);
     const product=adminData.products;
     // res.sendFile(path.join(rootDir,'views','shop.html'));
-    res.render('shop',{prods:product,pageTitle:'Shop',path:"/"});
+    res.render('shop',{prods:product,pageTitle:'Shop',path:"/",hasProducts : product.length > 0, activeShoap:true,productCSS:true});
     
 });
 module.exports=router;
