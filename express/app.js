@@ -6,15 +6,24 @@ const expressHbs=require('express-handlebars');
 
 
 const app=express();
-const hbs = expressHbs.create({
-    layoutsDir:'views/layouts',
-    defaultLayout: 'main-layout',
-    extname:'handlebars'  // Disable the default layout
- });
+
+// this is foe handle bars 
+
+// const hbs = expressHbs.create({
+//     layoutsDir:'views/layouts',
+//     defaultLayout: 'main-layout',
+//     extname:'handlebars'  
+//  });
  
-app.engine('handlebars', hbs.engine);
-// app.set('view engine','pug');
-app.set('view engine','handlebars');
+// app.engine('handlebars', hbs.engine);
+// app.set('view engine','handlebars');
+
+// this is for pug
+//  app.set('view engine','pug');
+
+// from here ejs start 
+
+app.set('view engine','ejs');
 app.set('views','views');
 
 const adminData=require('./routes/admin');
@@ -34,7 +43,7 @@ app.use(shopRouts);
 app.use((req,res,next)=>{
     // res.status(404).send('<h1>Page not found</h1>')
     // res.sendFile(pathImp.join(__dirname,'views','404.html'));
-    res.render("404",{pageTitle:"404"});
+    res.render("404",{pageTitle:"404",path:'404'});
 })
 
 app.listen(3000);
