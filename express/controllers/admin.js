@@ -12,7 +12,20 @@ exports.getAddProduct = (req, res, next) => {
 };
 
 exports.postAddProduct = (req,res,next) => {
-    const product=new Product(req.body.title);
+  const title=req.body.title;
+  const ImageUrl=req.body.ImageUrl;
+  const price=req.body.price;
+  const description=req.body.description;
+  const product=new Product(title,ImageUrl,price,description);
     product.save();
      res.redirect("/");
 };
+exports.getProducts=(req,res,next)=>{
+  // res.render('admin/products',{
+  //   path:'admin/products',
+  //   pageTitle:'Admin Products'
+  // })
+  Product.fetchAll((products)=>{
+    res.render('admin/products',{prods:products,pageTitle:'Admin Products',path:"admin/products",hasProducts : products.length > 0, activeShoap:true,productCSS:true});
+  })
+}

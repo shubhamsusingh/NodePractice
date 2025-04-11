@@ -1,5 +1,6 @@
 
 const Product = require('../models/products');
+const path = require('../utils/path');
  
 
 exports.getProducts=(req,res,next)=>{
@@ -21,4 +22,10 @@ exports.getCart =(req,res,next)=>{
     path:'/cart',
     pageTitle:'Your Cart'
   })
+}
+exports.getCheckout=(req,res,next)=>{
+res.render('shop/checkout',{
+  path:'/checkout',
+  pageTitle:'Checkout'
+})
 }
