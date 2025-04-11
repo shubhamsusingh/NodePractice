@@ -19,8 +19,11 @@ exports.postAddProduct = (req,res,next) => {
 };
 
 exports.getProducts=(req,res,next)=>{
+  const products=Product.fetchAll((products)=>{
+    res.render('shop',{prods:products,pageTitle:'Shop',path:"/",hasProducts : products.length > 0, activeShoap:true,productCSS:true});
+  })
     // const product=adminData.products;
     // res.sendFile(path.join(rootDir,'views','shop.html'));
-    const products=Product.fetchAll();
-    res.render('shop',{prods:products,pageTitle:'Shop',path:"/",hasProducts : products.length > 0, activeShoap:true,productCSS:true});
+    // const products=Product.fetchAll();
+   
 }
