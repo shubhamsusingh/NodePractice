@@ -27,7 +27,15 @@ form {
   display: flex;
   align-items: center;
 }
-
+.centered{
+  text-align: center;
+}
+.productimg{
+  img{
+    height: 35vh;
+    width: 30vw;
+  }
+}
 .main-header__nav {
   height: 100%;
   display: none;
