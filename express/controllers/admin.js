@@ -62,3 +62,9 @@ exports.getProducts=(req,res,next)=>{
     res.render('admin/products',{prods:products,pageTitle:'Admin Products',path:"admin/products",hasProducts : products.length > 0, activeShoap:true,productCSS:true});
   })
 }
+exports.deleteProducts=(req,res,next)=>{
+  const prodId=req.body.productId;
+  Product.deleteById(prodId);
+  console.log(prodId);
+  res.redirect("/admin/products");
+}
