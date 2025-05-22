@@ -16,17 +16,20 @@ exports.postAddProduct = (req, res, next) => {
   const description = req.body.description;
   // const product = new Product(null, title, imageUrl, description, price);
   // product.save();
-  Product.create({
-    title:title,
-    price:price,
-    imageUrl:imageUrl,
-    description:description
-  }).then(result=>{
-    console.log("Data inserted succesfully");
-  }).catch(err=>{
-    console.log(err);
-  })
+  req.user.createProduct({
+  title: title,
+  price: price,
+  imageUrl: imageUrl,
+  description: description
+})
+.then(result => {
+  console.log('Product Created');
   res.redirect('/');
+})
+.catch(err => {
+  console.log(err);
+});
+
 };
 
 exports.getEditProduct = (req, res, next) => {
