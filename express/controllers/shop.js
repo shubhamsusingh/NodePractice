@@ -131,6 +131,32 @@ return product.cartItem.destroy();
   // });
 };
 
+exports.postOrder = (req,res,next)=>{
+  req.user.getCart()
+  .then(cart=>{
+    // console.log(cart);
+    return cart.getProducts();
+  })
+  .then(products=>{
+    req.user.createOrder()
+    .then(order=>{
+     return order.addProducts(products.map(product=>{
+        product.orderItem = { quantity:product.cartItem.quantity};
+        return product;
+      }))
+    })
+    .catch(err=>{
+      console.log(err);
+    })
+  })
+  .then(result=>{
+    res.redirect('/orders');
+  })
+  .catch(err=>{
+    console.log(err);
+  })
+}
+
 exports.getOrders = (req, res, next) => {
   res.render('shop/orders', {
     path: '/orders',
