@@ -2,6 +2,7 @@ const Product = require('../models/product');
 const Cart = require('../models/cart');
 // const cartItem=require('../models/cart-item');
 const { where } = require('sequelize');
+const e = require('express');
 
 exports.getProducts = (req, res, next) => {
   Product.findAll()
@@ -131,37 +132,51 @@ return product.cartItem.destroy();
   // });
 };
 
-exports.postOrder = (req,res,next)=>{
+exports.postOrder = (req, res, next) => {
+  let fetchedCart;
+
   req.user.getCart()
-  .then(cart=>{
-    // console.log(cart);
-    return cart.getProducts();
-  })
-  .then(products=>{
-    req.user.createOrder()
-    .then(order=>{
-     return order.addProducts(products.map(product=>{
-        product.orderItem = { quantity:product.cartItem.quantity};
-        return product;
-      }))
+    .then(cart => {
+      fetchedCart = cart;
+      return cart.getProducts();
     })
-    .catch(err=>{
+    .then(products => {
+      return req.user.createOrder()
+        .then(order => {
+          return order.addProducts(
+            products.map(product => {
+              product.orderItem = { quantity: product.cartItem.quantity };
+              return product;
+            })
+          );
+        });
+    })
+    .then(result => {
+      return fetchedCart.setProducts(null);
+    })
+    .then(result => {
+      res.redirect('/orders');
+    })
+    .catch(err => {
       console.log(err);
-    })
-  })
-  .then(result=>{
-    res.redirect('/orders');
+    });
+};
+
+
+exports.getOrders = (req, res, next) => {
+  req.user.getOrders({include:['products']})
+  .then(orders=>{
+    // console.log(orders);
+    res.render('shop/orders', {
+    path: '/orders',
+    pageTitle: 'Your Orders',
+    orders:orders
+  });
   })
   .catch(err=>{
     console.log(err);
-  })
-}
-
-exports.getOrders = (req, res, next) => {
-  res.render('shop/orders', {
-    path: '/orders',
-    pageTitle: 'Your Orders'
   });
+  
 };
 
 exports.getCheckout = (req, res, next) => {
