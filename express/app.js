@@ -18,6 +18,7 @@ app.set('views', 'views');
 
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
+const authRoutes = require('./routes/auth');
 const { name } = require('ejs');
 // db.execute('SELECT * FROM products')
 // .then(result=>{
@@ -40,6 +41,7 @@ app.use((req,res,next)=>{
 })
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
+app.use(authRoutes);
 
 app.use(errorController.get404);
 Product.belongsTo(User,{constraints:true,onDelete:'CASCADE'});
