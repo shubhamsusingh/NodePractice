@@ -1,23 +1,23 @@
 exports.getLogin = (req, res, next) => {
-   const cookieHeader = req.get('Cookie') || '';
-    let isLoggedIn = false;
-
-    cookieHeader.split(';').forEach(cookie => {
-        const [name, value] = cookie.trim().split('=');
-        if (name === 'loggedIn' && value === 'true') {
-            isLoggedIn = true;
-        }
-    });
-
+    console.log("Login page hit. Session loggedIn?", req.session.isLoggedIn);
     res.render('auth/login', {
         path: '/login',
         pageTitle: "Login",
-        isAuthenticated: isLoggedIn
+        isAuthenticated: req.session.isLoggedIn || false
     });
 };
 
 exports.postLogin=(req,res,next)=>{
-     res.setHeader('Set-Cookie', 'loggedIn=true; HttpOnly');//secure
-    // req.isLoggedIn=true;
+    //Cookiew set :-
+    //  res.setHeader('Set-Cookie', 'loggedIn=true; HttpOnly');//secure
+
+    //session setting:-
+    req.session.isLoggedIn=true;
+    
+   req.session.save(err => {
+    if (err) {
+      console.log("Session save error:", err);
+    }
     res.redirect('/');
+  });
 }
