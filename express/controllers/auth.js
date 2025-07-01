@@ -1,3 +1,4 @@
+const User=require('../models/user');
 exports.getLogin = (req, res, next) => {
     console.log("Login page hit. Session loggedIn?", req.session.isLoggedIn);
     res.render('auth/login', {
@@ -12,14 +13,13 @@ exports.postLogin=(req,res,next)=>{
     //  res.setHeader('Set-Cookie', 'loggedIn=true; HttpOnly');//secure
 
     //session setting:-
-    req.session.isLoggedIn=true;
-    
-   req.session.save(err => {
-    if (err) {
-      console.log("Session save error:", err);
-    }
-    res.redirect('/');
-  });
+    User.findByPk(1)
+    .then(user => {
+      req.session.isLoggedIn = true;
+      req.session.user = user;
+      res.redirect('/');
+    })
+    .catch(err => console.log(err));
 }
 exports.postLogout=(req,res,next)=>{
    req.session.destroy(err=>{

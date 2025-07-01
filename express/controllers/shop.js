@@ -11,7 +11,7 @@ res.render('shop/product-list', {
       prods: rows,
       pageTitle: 'All Products',
       path: '/products',
-      isAuthenticated:req.isLoggedIn
+      isAuthenticated: req.session.isLoggedIn
     });
   }).catch(err=>{
     console.log(err)
@@ -27,7 +27,7 @@ exports.getProduct = (req, res, next) => {
       product: product[0],
       pageTitle: product[0].title,
       path: '/products',
-      isAuthenticated:req.isLoggedIn
+      isAuthenticated: req.session.isLoggedIn
     })
   }
    
@@ -54,7 +54,7 @@ res.render('shop/index', {
       prods: products,
       pageTitle: 'Shop',
       path: '/',
-      isAuthenticated:req.session.isLoggedIn
+      isAuthenticated: req.session.isLoggedIn
     });
   }).catch(err=>{console.log(err)});
    
@@ -69,7 +69,7 @@ exports.getCart = (req, res, next) => {
         path:'/cart',
         pageTitle:'Your Cart',
         products:products,
-      isAuthenticated:req.isLoggedIn
+      isAuthenticated: req.session.isLoggedIn
       })
     })
     .catch(err=>{
@@ -120,7 +120,8 @@ return fetchedCart.addProduct(product,{
 
 exports.postCartDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
-  req.user.getCart().then(cart=>{
+  
+  req.session.user.getCart().then(cart=>{
     return cart.getProducts({where:{id:prodId}})
   }).then(products=>{
 const product=products[0];
@@ -139,13 +140,13 @@ return product.cartItem.destroy();
 exports.postOrder = (req, res, next) => {
   let fetchedCart;
 
-  req.user.getCart()
+  req.session.user.getCart()
     .then(cart => {
       fetchedCart = cart;
       return cart.getProducts();
     })
     .then(products => {
-      return req.user.createOrder()
+      return req.session.user.createOrder()
         .then(order => {
           return order.addProducts(
             products.map(product => {
@@ -168,14 +169,14 @@ exports.postOrder = (req, res, next) => {
 
 
 exports.getOrders = (req, res, next) => {
-  req.user.getOrders({include:['products']})
+  req.session.user.getOrders({include:['products']})
   .then(orders=>{
     // console.log(orders);
     res.render('shop/orders', {
     path: '/orders',
     pageTitle: 'Your Orders',
     orders:orders,
-    isAuthenticated:req.isLoggedIn
+    isAuthenticated: req.session.isLoggedIn
   });
   })
   .catch(err=>{
@@ -188,6 +189,6 @@ exports.getCheckout = (req, res, next) => {
   res.render('shop/checkout', {
     path: '/checkout',
     pageTitle: 'Checkout',
-    isAuthenticated:req.isLoggedIn
+    isAuthenticated: req.session.isLoggedIn
   });
 };
