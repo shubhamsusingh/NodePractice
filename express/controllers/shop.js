@@ -121,7 +121,7 @@ return fetchedCart.addProduct(product,{
 exports.postCartDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
   
-  req.session.user.getCart().then(cart=>{
+  req.user.getCart().then(cart=>{
     return cart.getProducts({where:{id:prodId}})
   }).then(products=>{
 const product=products[0];
@@ -140,13 +140,13 @@ return product.cartItem.destroy();
 exports.postOrder = (req, res, next) => {
   let fetchedCart;
 
-  req.session.user.getCart()
+  req.user.getCart()
     .then(cart => {
       fetchedCart = cart;
       return cart.getProducts();
     })
     .then(products => {
-      return req.session.user.createOrder()
+      return req.user.createOrder()
         .then(order => {
           return order.addProducts(
             products.map(product => {
@@ -169,7 +169,7 @@ exports.postOrder = (req, res, next) => {
 
 
 exports.getOrders = (req, res, next) => {
-  req.session.user.getOrders({include:['products']})
+  req.user.getOrders({include:['products']})
   .then(orders=>{
     // console.log(orders);
     res.render('shop/orders', {
