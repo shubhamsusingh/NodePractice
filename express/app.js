@@ -77,26 +77,24 @@ User.hasMany(Order);
 Order.belongsToMany(Product,{ through : OrderItem });
 
 
-sequelize
-//  .sync({force:true})
- .sync()
-.then(result=>{
-    return User.findByPk(1);
-    // console.log(result);
-})
-.then(user=>{
-    if(!user){
-        return User.create({name:'Shubham',email:'shubham@123.gmail.com'});
-    }
-    return user;
-})
-.then(user=>{
-    return user.createCart();
-})
-.then(cart=>{
+// sequelize
+// //  .sync({force:true})
+//  .sync()
+// .then(result=>{
+//     return User.findByPk(1);
+//     // console.log(result);
+// })
+// .then(user=>{
+//     if(!user){
+//         return User.create({name:'Shubham',email:'shubham@123.gmail.com'});
+//     }
+//     return user;
+// })
+// .then(user=>{
+//     return user.createCart();
+// })
+
 app.listen(3000);
-})
-.catch(err=>{
-console.log(err);
-});
+
+
 
