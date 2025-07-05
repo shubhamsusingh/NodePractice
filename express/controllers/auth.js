@@ -1,4 +1,5 @@
 const User=require('../models/user');
+const bcrypt=require('bcryptjs');
 exports.getLogin = (req, res, next) => {
     console.log("Login page hit. Session loggedIn?", req.session.isLoggedIn);
     res.render('auth/login', {
@@ -21,14 +22,29 @@ exports.postLogin=(req,res,next)=>{
     //  res.setHeader('Set-Cookie', 'loggedIn=true; HttpOnly');//secure
 
     //session setting:-
-    User.findByPk(1)
+    const email=req.body.email;
+    const password=req.body.password;
+    User.findOne({where:{email:email}})
     .then(user => {
+      if(!user){
+        return res.redirect('/login');
+      }
+      bcrypt.compare(password,user.password)
+      .then(doMatch=>{
+        if(doMatch){
       req.session.isLoggedIn = true;
       req.session.user = user;
-      req.session.save(err=>{
-        console.log(err);
-        res.redirect('/');
+     return req.session.save(err=>{
+         res.redirect('/');
       })
+        }
+        res.redirect('/login');
+      })
+      .catch(err=>{
+        console.log(err);
+        res.redirect('/login');
+      })
+      
     })
     .catch(err => console.log(err));
 }
@@ -41,15 +57,18 @@ exports.postSignup = (req, res, next) => {
     if(userDoc){
       return res.redirect('/signup');
     }
-    const user =new User({
+    return bcrypt.hash(password,12)
+    .then(hashPassword=>{
+      const user =new User({
       email:email,
-      password:password
+      password:hashPassword
     });
     return user.save();
   })
   .then(result=>{
     result.createCart();
     res.redirect('/login');
+  })
   })
   .catch(err=>{
     console.log(err);
