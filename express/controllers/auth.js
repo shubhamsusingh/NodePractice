@@ -1,4 +1,5 @@
 const User=require('../models/user');
+const bcrypt=require('bcryptjs');
 exports.getLogin = (req, res, next) => {
     console.log("Login page hit. Session loggedIn?", req.session.isLoggedIn);
     res.render('auth/login', {
@@ -41,15 +42,18 @@ exports.postSignup = (req, res, next) => {
     if(userDoc){
       return res.redirect('/signup');
     }
-    const user =new User({
+    return bcrypt.hash(password,12)
+    .then(hashPassword=>{
+      const user =new User({
       email:email,
-      password:password
+      password:hashPassword
     });
     return user.save();
   })
   .then(result=>{
     result.createCart();
     res.redirect('/login');
+  })
   })
   .catch(err=>{
     console.log(err);
