@@ -14,6 +14,7 @@ const CartItem = require('./models/cart-item');
 const Order = require('./models/order');
 const OrderItem = require('./models/order-item');
 const csrf=require('csurf');
+const flash=require('connect-flash');
 
 const app = express();
 const store = new MySQLStore({
@@ -43,6 +44,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({secret:'my secret',resave:false,saveUninitialized:false, store:store}));
 app.use(csrfProtection);
+app.use(flash());
 app.use((req, res, next) => { 
     if(!req.session.user){
         return next();
