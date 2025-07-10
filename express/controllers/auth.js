@@ -1,5 +1,13 @@
 const User=require('../models/user');
 const bcrypt=require('bcryptjs');
+const nodemailer=require('nodemailer');
+const sendgridTransport=require('nodemailer-sendgrid-transport');
+require('dotenv').config();
+const transporter = nodemailer.createTransport(sendgridTransport({
+    auth: {
+        api_key: process.env.SENDGRID_API_KEY
+    }
+}));
 exports.getLogin = (req, res, next) => {
 console.log("Login page hit. Session loggedIn?", req.session.isLoggedIn);
 let message=req.flash('error');
@@ -64,6 +72,7 @@ res.redirect('/login');
 })
 .catch(err => console.log(err));
 }
+
 exports.postSignup = (req, res, next) => {
 const email=req.body.email;
 const password=req.body.password;
@@ -83,8 +92,23 @@ password:hashPassword
 return user.save();
 })
 .then(result=>{
-result.createCart();
-res.redirect('/login');
+    result.createCart();
+   res.redirect('/login');
+   console.log("Attempting to send signup confirmation email...");
+return transporter.sendMail({
+    to: 'singhsidhanshu771@gmail.com',
+    from: 'singhshubham68738@gmail.com',
+    subject: 'Signup succeeded',
+    html: '<h1>You successfully signed up!</h1>'
+})
+.then(() => {
+    console.log("✅ Email sent successfully");
+})
+.catch(err => {
+    console.log("❌ Failed to send email:", err);
+});
+
+
 })
 })
 .catch(err=>{
