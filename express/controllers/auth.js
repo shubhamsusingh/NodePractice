@@ -6,6 +6,7 @@ const crypto=require('crypto');
 const { buffer } = require('stream/consumers');
 const { where } = require('sequelize');
 const { use } = require('react');
+const { Op } = require('sequelize');
 require('dotenv').config();
 const transporter = nodemailer.createTransport(sendgridTransport({
     auth: {
@@ -182,4 +183,70 @@ crypto.randomBytes(30,(err,buffer)=>{
         console.log(err);
     });
 });
+}
+
+exports.getNewPassword = (req,res,next)=>{
+  const token=req.params.token;
+  User.findOne({
+    where: {
+      resetToken: token,
+      resetTokenExpiration: {
+        [Op.gt]: Date.now()
+      }
+    }
+  })
+  .then(user=>{
+    console.log("token=",token);
+    console.log("user email=",user.email);
+let message=req.flash('error');
+if(message.length>0){
+    message=message[0];
+}else{
+    message=null;
+}
+res.render('auth/new-password', {
+path: '/new-password',
+pageTitle: "New Password",
+isAuthenticated: req.session.isLoggedIn || false,
+errorMessage:message,
+userId:user.id.toString(),
+token:token
+});
+  })
+  .catch(err=>{
+    console.log(err);
+  })
+    
+}
+exports.postNewPassword=(req,res,next)=>{
+    const newPassword = req.body.password;
+    const userId=req.body.userId;
+    const token=req.body.token;
+    let resetUser;
+     User.findOne({
+    where: {
+      resetToken: token,
+      resetTokenExpiration: {
+        [Op.gt]: Date.now()
+      },
+      id:userId
+    }
+  })
+  .then(user=>{
+    resetUser=user;
+    return bcrypt.hash(newPassword,12);
+  })
+  .then(hashedPassword=>{
+    resetUser.password=hashedPassword;
+    resetUser.resetToken=undefined;
+    resetUser.resetTokenExpiration=undefined;
+    return resetUser.save();
+  })
+  .then(result=>{
+    res.redirect('/login');
+  })
+  .catch(err=>{
+    console.log(err);
+  })
+
 }
