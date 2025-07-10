@@ -13,6 +13,8 @@ const Cart = require('./models/cart');
 const CartItem = require('./models/cart-item');
 const Order = require('./models/order');
 const OrderItem = require('./models/order-item');
+const csrf=require('csurf');
+const flash=require('connect-flash');
 
 const app = express();
 const store = new MySQLStore({
@@ -23,7 +25,7 @@ const store = new MySQLStore({
     database: 'node-complete'
 });
 
-
+const csrfProtection=csrf();
 app.set('view engine', 'ejs');
 app.set('views', 'views');
 
@@ -41,25 +43,32 @@ const { name } = require('ejs');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({secret:'my secret',resave:false,saveUninitialized:false, store:store}));
+app.use(csrfProtection);
+app.use(flash());
 app.use((req, res, next) => { 
     if(!req.session.user){
         return next();
     } 
-    User.findByPk(req.session.user._id)
+    User.findByPk(req.session.user.id)
     .then(user => {
       req.user = user;
       next();
     })
     .catch(err => console.log(err));});
+// app.use((req,res,next)=>{
+//     User.findByPk(1)
+//     .then(user=>{
+//         req.user=user;
+//         next();
+//     })
+//     .catch(err=>{
+//         console.log(err);
+//     })
+// })
 app.use((req,res,next)=>{
-    User.findByPk(1)
-    .then(user=>{
-        req.user=user;
-        next();
-    })
-    .catch(err=>{
-        console.log(err);
-    })
+    res.locals.isAuthenticated=req.session.isLoggedIn;
+    res.locals.csrfToken=req.csrfToken();
+    next();
 })
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
@@ -77,26 +86,24 @@ User.hasMany(Order);
 Order.belongsToMany(Product,{ through : OrderItem });
 
 
-sequelize
-//  .sync({force:true})
- .sync()
-.then(result=>{
-    return User.findByPk(1);
-    // console.log(result);
-})
-.then(user=>{
-    if(!user){
-        return User.create({name:'Shubham',email:'shubham@123.gmail.com'});
-    }
-    return user;
-})
-.then(user=>{
-    return user.createCart();
-})
-.then(cart=>{
+// sequelize
+// //  .sync({force:true})
+//  .sync()
+// .then(result=>{
+//     return User.findByPk(1);
+//     // console.log(result);
+// })
+// .then(user=>{
+//     if(!user){
+//         return User.create({name:'Shubham',email:'shubham@123.gmail.com'});
+//     }
+//     return user;
+// })
+// .then(user=>{
+//     return user.createCart();
+// })
+
 app.listen(3000);
-})
-.catch(err=>{
-console.log(err);
-});
+
+
 
