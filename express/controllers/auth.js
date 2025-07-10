@@ -2,6 +2,10 @@ const User=require('../models/user');
 const bcrypt=require('bcryptjs');
 const nodemailer=require('nodemailer');
 const sendgridTransport=require('nodemailer-sendgrid-transport');
+const crypto=require('crypto');
+const { buffer } = require('stream/consumers');
+const { where } = require('sequelize');
+const { use } = require('react');
 require('dotenv').config();
 const transporter = nodemailer.createTransport(sendgridTransport({
     auth: {
@@ -133,5 +137,49 @@ path: '/reset',
 pageTitle: "Reset Password",
 isAuthenticated: req.session.isLoggedIn || false,
 errorMessage:message
+});
+}
+
+exports.postReset=(req,res,next)=>{
+crypto.randomBytes(30,(err,buffer)=>{
+    if(err){
+        console.log(err);
+        return res.redirect('/reset');
+    }
+    const token=buffer.toString('hex');
+    console.log("this is token",token);
+    User.findOne({where:{email:req.body.email}})
+    .then(user=>{
+        if(!user){
+            req.flash('error','No Account with that email found.');
+            return res.redirect('/reset');
+        }
+        user.resetToken=token;
+        user.resetTokenExpiration=Date.now()+3600000;
+        return user.save();
+    })
+    .then(result=>{
+        res.redirect('/');
+        return transporter.sendMail({
+        to: req.body.email,
+        from: 'singhshubham68738@gmail.com',
+        subject: 'password reset',
+       html: `
+         <p>You requested a password reset</p>
+         <p>Click this <a href="http://localhost:3000/reset/${token}">link</a> to set a new password.</p>
+        `
+
+    })
+    .then(() => {
+        console.log("✅ Reset-Link sent successfully");
+    })
+    .catch(err => {
+        console.log("❌ Failed to send Reset-Link:", err);
+    });
+
+    })
+    .catch(err=>{
+        console.log(err);
+    });
 });
 }
