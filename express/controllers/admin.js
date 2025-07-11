@@ -68,16 +68,19 @@ exports.postEditProduct = (req, res, next) => {
   const updatedDesc = req.body.description;
   Product.findByPk(prodId)
   .then(product=>{
+    if(product.userId!=req.user.id){
+      return res.redirect('/');
+    }
     product.title=updatedTitle;
     product.price=updatedPrice;
     product.imageUrl=updatedImageUrl;
     product.description=updatedDesc;
-   return product.save();
-  })
-  .then(result=>{
+   return product.save().then(result=>{
     console.log('UPDATED PRODUCT!');
     res.redirect('/admin/products');
   })
+  })
+  
   .catch(err=>{
     console.log(err);
   })
@@ -108,16 +111,21 @@ exports.getProducts = (req, res, next) => {
 
 exports.postDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
-  // Product.deleteById(prodId);
-  Product.findByPk(prodId).then(
-    Product.destroy({where:{id:prodId}})
-    .then(result=>{
-      console.log(result);
-    }).catch(err=>{
-      console.log(err);
+
+  Product.findByPk(prodId)
+    .then(product => {
+      if (product.userId != req.user.id) {
+        return res.redirect('/');
+      }
+      return Product.destroy({ where: { id: prodId } });
     })
-  ).catch(err=>{
-    console.log(err);
-  })
-  res.redirect('/admin/products');
+    .then(result => {
+      console.log(result);
+      res.redirect('/admin/products');
+    })
+    .catch(err => {
+      console.log(err);
+      res.redirect('/admin/products');
+    });
 };
+
