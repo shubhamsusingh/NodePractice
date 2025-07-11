@@ -68,6 +68,9 @@ exports.postEditProduct = (req, res, next) => {
   const updatedDesc = req.body.description;
   Product.findByPk(prodId)
   .then(product=>{
+    if(product.userId!=req.user.id){
+      return res.redirect('/');
+    }
     product.title=updatedTitle;
     product.price=updatedPrice;
     product.imageUrl=updatedImageUrl;

@@ -167,7 +167,7 @@ crypto.randomBytes(30,(err,buffer)=>{
         subject: 'password reset',
        html: `
          <p>You requested a password reset</p>
-         <p>Click this <a href="http://localhost:3000/reset/${token}">link</a> to set a new password.</p>
+         <p>Click this <a href="http://localhost:3000/reset/${token}"><h1>Click Here</h1></a> to set a new password.</p>
         `
 
     })
@@ -238,8 +238,8 @@ exports.postNewPassword=(req,res,next)=>{
   })
   .then(hashedPassword=>{
     resetUser.password=hashedPassword;
-    resetUser.resetToken=undefined;
-    resetUser.resetTokenExpiration=undefined;
+    resetUser.resetToken=null;
+    resetUser.resetTokenExpiration=null;
     return resetUser.save();
   })
   .then(result=>{
