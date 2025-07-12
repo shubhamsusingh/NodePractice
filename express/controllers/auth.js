@@ -8,6 +8,7 @@ const { where } = require('sequelize');
 const { use } = require('react');
 const { Op } = require('sequelize');
 const { validationResult } = require('express-validator');
+const path = require('path');
 
 require('dotenv').config();
 const transporter = nodemailer.createTransport(sendgridTransport({
@@ -42,7 +43,12 @@ res.render('auth/signup', {
 path: '/signup',
 pageTitle: 'Signup',
 isAuthenticated: false,
-errorMessage:message
+errorMessage:message,
+oldInput:{
+  email:"",
+  password:"",
+  confirmPassword:""
+}
 });
 }
 
@@ -53,6 +59,15 @@ exports.postLogin=(req,res,next)=>{
 //session setting:-
 const email=req.body.email;
 const password=req.body.password;
+
+const errors=validationResult(req);
+if(!errors.isEmpty()){
+  return res.status(422).render('auth/login',{
+    path:'/login',
+    pageTitle:'Login',
+    errorMessage:errors.array[0].msg
+  });
+}
 User.findOne({where:{email:email}})
 .then(user => {
 if(!user){
@@ -92,16 +107,16 @@ if(!errors.isEmpty()){
     path: '/signup',
     pageTitle: 'Signup',
     isAuthenticated: false,
-    errorMessage:errors.array()[0].msg
+    errorMessage:errors.array()[0].msg,
+    oldInput:{
+  email:email,
+  password:password,
+  confirmPassword:req.body.confirmPassword
+}
     })
 }
-User.findOne({ where: { email: email } })
-.then(userDoc=>{
-if(userDoc){
-req.flash('error','Email already available');
-return res.redirect('/signup');
-}
-return bcrypt.hash(password,12)
+
+ bcrypt.hash(password,12)
 .then(hashPassword=>{
 const user =new User({
 email:email,
@@ -127,10 +142,6 @@ return transporter.sendMail({
 });
 
 
-})
-})
-.catch(err=>{
-console.log(err);
 })
 };
 exports.postLogout=(req,res,next)=>{
