@@ -7,6 +7,8 @@ const { buffer } = require('stream/consumers');
 const { where } = require('sequelize');
 const { use } = require('react');
 const { Op } = require('sequelize');
+const { validationResult } = require('express-validator');
+
 require('dotenv').config();
 const transporter = nodemailer.createTransport(sendgridTransport({
     auth: {
@@ -82,6 +84,17 @@ exports.postSignup = (req, res, next) => {
 const email=req.body.email;
 const password=req.body.password;
 const confirmPassword=req.body.confirmPassword;
+const errors=validationResult(req);
+if(!errors.isEmpty()){
+  console.log(errors.array());
+  return res.status(422)
+  .render('auth/signup', {
+    path: '/signup',
+    pageTitle: 'Signup',
+    isAuthenticated: false,
+    errorMessage:errors.array()[0].msg
+    })
+}
 User.findOne({ where: { email: email } })
 .then(userDoc=>{
 if(userDoc){
