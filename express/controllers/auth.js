@@ -4,7 +4,7 @@ const nodemailer=require('nodemailer');
 const sendgridTransport=require('nodemailer-sendgrid-transport');
 const crypto=require('crypto');
 const { buffer } = require('stream/consumers');
-const { where } = require('sequelize');
+const { where, ValidationError } = require('sequelize');
 const { use } = require('react');
 const { Op } = require('sequelize');
 const { validationResult } = require('express-validator');
@@ -48,7 +48,8 @@ oldInput:{
   email:"",
   password:"",
   confirmPassword:""
-}
+},
+validationErrors:[]
 });
 }
 
@@ -111,8 +112,10 @@ if(!errors.isEmpty()){
     oldInput:{
   email:email,
   password:password,
-  confirmPassword:req.body.confirmPassword
-}
+  confirmPassword:req.body.confirmPassword,
+  
+},
+validationErrors:errors.array()
     })
 }
 
