@@ -7,7 +7,18 @@ const User=require('../models/user');
 
 router.get('/login',authController.getLogin);
 router.get('/signup',authController.getSignup);
-router.post('/login',authController.postLogin);
+router.post('/login',
+    [check('password').isLength({min:5}).withMessage("Invalid credential"),
+     body('email').custom((value,{req})=>{
+       return User.findOne({where:{email:value}})
+       .then(userDoc=>{
+        if(!userDoc){
+            return Promise.reject('user Not exists , pick a diffrent One.');
+            }
+       })
+     })
+    ]
+    ,authController.postLogin);
 router.post('/logout',authController.postLogout);
 router.post('/signup',
 [check('email').isEmail().withMessage('Please enter valid Email').custom((value,{req})=>{
