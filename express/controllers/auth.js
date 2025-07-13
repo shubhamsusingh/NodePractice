@@ -19,6 +19,7 @@ const transporter = nodemailer.createTransport(sendgridTransport({
 exports.getLogin = (req, res, next) => {
 console.log("Login page hit. Session loggedIn?", req.session.isLoggedIn);
 let message=req.flash('error');
+const errors=validationResult(req);
 if(message.length>0){
     message=message[0];
 }else{
@@ -28,7 +29,12 @@ res.render('auth/login', {
 path: '/login',
 pageTitle: "Login",
 isAuthenticated: req.session.isLoggedIn || false,
-errorMessage:message
+errorMessage:message,
+oldInput:{
+  email:"",
+  password:""
+},
+validationErrors:errors.array()
 });
 };
 
@@ -63,17 +69,31 @@ const password=req.body.password;
 
 const errors=validationResult(req);
 if(!errors.isEmpty()){
+  console.log(errors);
   return res.status(422).render('auth/login',{
     path:'/login',
     pageTitle:'Login',
-    errorMessage:errors.array[0].msg
+    errorMessage:errors.array()[0].msg,
+    oldInput:{
+      email:email,
+      password:password
+    },
+    validationErrors:errors.array()
   });
 }
 User.findOne({where:{email:email}})
 .then(user => {
 if(!user){
-    req.flash('error','invalid user or Password Please Check');
-return res.redirect('/login');
+ return res.status(422).render('auth/login',{
+    path:'/login',
+    pageTitle:'Login',
+    errorMessage:'invalid user or Password Please Check',
+    oldInput:{
+      email:email,
+      password:password
+    },
+    validationErrors:[]
+  });
 }
 bcrypt.compare(password,user.password)
 .then(doMatch=>{
@@ -84,8 +104,17 @@ return req.session.save(err=>{
 res.redirect('/');
 })
 }
-req.flash('error','invalid Password Please check');
-res.redirect('/login');
+
+ return res.status(422).render('auth/login',{
+    path:'/login',
+    pageTitle:'Login',
+    errorMessage:'invalid Password Please check',
+    oldInput:{
+      email:email,
+      password:password
+    },
+    validationErrors:[]
+  });
 })
 .catch(err=>{
 console.log(err);
