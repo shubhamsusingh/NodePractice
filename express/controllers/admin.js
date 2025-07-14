@@ -8,7 +8,8 @@ exports.getAddProduct = (req, res, next) => {
     path: '/admin/add-product',
     editing: false,
     hasError:false,
-    errorMessage:null
+    errorMessage:null,
+    validationErrors:[]
   });
 };
 
@@ -32,7 +33,8 @@ exports.postAddProduct = (req, res, next) => {
         description:description,
       },
        hasError:true,
-        errorMessage:errors.array()[0].msg
+       errorMessage:errors.array()[0].msg,
+       validationErrors:errors.array()
     });
   }
   req.user.createProduct({
@@ -73,7 +75,8 @@ exports.getEditProduct = (req, res, next) => {
       product: product,
       isAuthenticated: req.session.isLoggedIn,
       hasError:false,
-      errorMessage:null
+      errorMessage:null,
+      validationErrors:[]
     });
   })
   .catch(err=>{
