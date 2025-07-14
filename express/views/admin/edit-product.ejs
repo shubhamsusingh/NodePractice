@@ -29,7 +29,8 @@
                 <textarea class="<%=validationErrors.find(e=>e.path==='description')? 'invalid':''%>" name="description"  id="description" rows="5"><% if (editing || hasError) { %><%= product.description %><% } %></textarea>
             </div>
             <% if (editing) { %>
-                <input type="hidden" value="<%= product.id %>" name="productId">
+                <!-- <input type="hidden" value="<%= product.id %>" name="productId"> -->
+                <input type="hidden" name="productId" value="<%= product.id  %>">
             <% } %>
 
             <button class="btn" type="submit"><% if (editing) { %>Update Product<% } else { %>Add Product<% } %></button>

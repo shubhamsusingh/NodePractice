@@ -96,6 +96,24 @@ exports.postEditProduct = (req, res, next) => {
     if(product.userId!=req.user.id){
       return res.redirect('/');
     }
+     const errors=validationResult(req);
+  if(!errors.isEmpty()){
+    return res.status(422).render('admin/edit-product', {
+      pageTitle: 'edit Product',
+      path: '/admin/edit-product',
+      editing: true,
+      product: {
+        title:updatedTitle,
+        imageUrl:updatedImageUrl,
+        price:updatedPrice,
+        description:updatedDesc,
+        product: product,
+      },
+       hasError:true,
+       errorMessage:errors.array()[0].msg,
+       validationErrors:errors.array()
+    });
+  }
     product.title=updatedTitle;
     product.price=updatedPrice;
     product.imageUrl=updatedImageUrl;
