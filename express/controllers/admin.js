@@ -24,7 +24,7 @@ exports.postAddProduct = (req, res, next) => {
   if(!errors.isEmpty()){
     return res.status(422).render('admin/edit-product', {
       pageTitle: 'Add Product',
-      path: '/admin/edit-product',
+      path: '/admin/add-product',
       editing: false,
       product: {
         title:title,
@@ -38,6 +38,7 @@ exports.postAddProduct = (req, res, next) => {
     });
   }
   req.user.createProduct({
+  
   title: title,
   price: price,
   imageUrl: imageUrl,
@@ -50,7 +51,22 @@ exports.postAddProduct = (req, res, next) => {
   res.redirect('/');
 })
 .catch(err => {
-  console.log(err);
+
+  //  return res.status(500).render('admin/edit-product', {
+  //     pageTitle: 'Add Product',
+  //     path: '/admin/add-product',
+  //     editing: false,
+  //     product: {
+  //       title:title,
+  //       imageUrl:imageUrl,
+  //       price:price,
+  //       description:description,
+  //     },
+  //      hasError:true,
+  //      errorMessage:"Database operation faild, please try again.",
+  //      validationErrors:[]
+  //   });
+  res.redirect('/500');
 });
 
 };
