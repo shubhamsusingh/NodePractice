@@ -33,13 +33,7 @@ const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 const authRoutes = require('./routes/auth');
 const { name } = require('ejs');
-// db.execute('SELECT * FROM products')
-// .then(result=>{
-//     console.log(result);
-// })
-// .catch(err=>{
-//     console.log(err);
-// });
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({secret:'my secret',resave:false,saveUninitialized:false, store:store}));
@@ -79,24 +73,6 @@ Product.belongsToMany(Cart,{through:CartItem});
 Order.belongsTo(User);
 User.hasMany(Order);
 Order.belongsToMany(Product,{ through : OrderItem });
-
-
-// sequelize
-// //  .sync({force:true})
-//  .sync()
-// .then(result=>{
-//     return User.findByPk(1);
-//     // console.log(result);
-// })
-// .then(user=>{
-//     if(!user){
-//         return User.create({name:'Shubham',email:'shubham@123.gmail.com'});
-//     }
-//     return user;
-// })
-// .then(user=>{
-//     return user.createCart();
-// })
 
 app.listen(3000);
 
