@@ -38,7 +38,6 @@ exports.postAddProduct = (req, res, next) => {
     });
   }
   req.user.createProduct({
-  
   title: title,
   price: price,
   imageUrl: imageUrl,
@@ -51,22 +50,10 @@ exports.postAddProduct = (req, res, next) => {
   res.redirect('/');
 })
 .catch(err => {
-
-  //  return res.status(500).render('admin/edit-product', {
-  //     pageTitle: 'Add Product',
-  //     path: '/admin/add-product',
-  //     editing: false,
-  //     product: {
-  //       title:title,
-  //       imageUrl:imageUrl,
-  //       price:price,
-  //       description:description,
-  //     },
-  //      hasError:true,
-  //      errorMessage:"Database operation faild, please try again.",
-  //      validationErrors:[]
-  //   });
-  res.redirect('/500');
+  // res.redirect('/500');
+  const error=new Error(err);
+  error.httpStatusCode=500;
+  return next(error);
 });
 
 };
@@ -85,6 +72,7 @@ exports.getEditProduct = (req, res, next) => {
       return res.redirect('/');
     }
     res.render('admin/edit-product', {
+      
       pageTitle: 'Edit Product',
       path: '/admin/edit-product',
       editing: editMode,
@@ -96,7 +84,9 @@ exports.getEditProduct = (req, res, next) => {
     });
   })
   .catch(err=>{
-    console.log(err);
+  const error=new Error(err);
+  error.httpStatusCode=500;
+  return next(error);
   })
  
 };
@@ -123,7 +113,9 @@ exports.postEditProduct = (req, res, next) => {
   })
   
   .catch(err=>{
-    console.log(err);
+  const error=new Error(err);
+  error.httpStatusCode=500;
+  return next(error);
   })
     
   

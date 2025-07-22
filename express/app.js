@@ -33,6 +33,7 @@ const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 const authRoutes = require('./routes/auth');
 const { name } = require('ejs');
+const { error } = require('console');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -64,6 +65,9 @@ app.use(shopRoutes);
 app.use(authRoutes);
 app.get('/500',errorController.get500);
 app.use(errorController.get404);
+app.use((error,req,res,next)=>{
+    res.redirect('/500');
+})
 Product.belongsTo(User,{constraints:true,onDelete:'CASCADE'});
 User.hasMany(Product);
 User.hasOne(Cart);
