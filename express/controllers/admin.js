@@ -130,9 +130,13 @@ exports.getProducts = (req, res, next) => {
       path: '/admin/products',
       isAuthenticated: req.session.isLoggedIn
     });
-  }).catch(err=>{
-    console.log(err)
-  });
+  }).catch(err => {
+  // res.redirect('/500');
+  const error=new Error(err);
+  error.httpStatusCode=500;
+  return next(error);
+});
+
   // Product.fetchAll(products => {
   //   res.render('admin/products', {
   //     prods: products,

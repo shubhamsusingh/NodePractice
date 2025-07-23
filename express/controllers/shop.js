@@ -13,9 +13,14 @@ pageTitle: 'All Products',
 path: '/products',
 isAuthenticated: req.session.isLoggedIn
 });
-}).catch(err=>{
-console.log(err)
+})
+.catch(err => {
+  // res.redirect('/500');
+  const error=new Error(err);
+  error.httpStatusCode=500;
+  return next(error);
 });
+
 
 
 };
@@ -31,9 +36,13 @@ isAuthenticated: req.session.isLoggedIn
 })
 }
 
-).catch(err=>{
-console.log(err)
-})
+).catch(err => {
+  // res.redirect('/500');
+  const error=new Error(err);
+  error.httpStatusCode=500;
+  return next(error);
+});
+
 // Product.findById(prodId)
 // .then((product)=>{
 // res.render('shop/product-detail', {
@@ -55,7 +64,13 @@ prods: products,
 pageTitle: 'Shop',
 path: '/'
 });
-}).catch(err=>{console.log(err)});
+}).catch(err => {
+  // res.redirect('/500');
+  const error=new Error(err);
+  error.httpStatusCode=500;
+  return next(error);
+});
+
 
 };
 
@@ -74,9 +89,13 @@ isAuthenticated: req.session.isLoggedIn
 .catch(err=>{
 console.log(err);
 });
-}).catch(err=>{
-console.log(err);
-})
+}).catch(err => {
+  // res.redirect('/500');
+  const error=new Error(err);
+  error.httpStatusCode=500;
+  return next(error);
+});
+
 };
 
 exports.postCart = (req, res, next) => {
@@ -111,9 +130,13 @@ res.redirect('/cart');
 .catch(err=>{
 console.log(err);
 })
-}).catch(err=>{
-console.log(err);
-})
+}).catch(err => {
+  // res.redirect('/500');
+  const error=new Error(err);
+  error.httpStatusCode=500;
+  return next(error);
+});
+
 
 };
 
@@ -127,9 +150,13 @@ const product=products[0];
 return product.cartItem.destroy();
 }).then(result=>{
 res.redirect('/cart');
-}).catch(err=>{
-console.log(err);
-})
+}).catch(err => {
+  // res.redirect('/500');
+  const error=new Error(err);
+  error.httpStatusCode=500;
+  return next(error);
+});
+
 // Product.findById(prodId, product => {
 // Cart.deleteProduct(prodId, product.price);
 // res.redirect('/cart');
@@ -162,8 +189,12 @@ return fetchedCart.setProducts(null);
 res.redirect('/orders');
 })
 .catch(err => {
-console.log(err);
+  // res.redirect('/500');
+  const error=new Error(err);
+  error.httpStatusCode=500;
+  return next(error);
 });
+
 };
 
 
@@ -178,9 +209,13 @@ orders:orders,
 isAuthenticated: req.session.isLoggedIn
 });
 })
-.catch(err=>{
-console.log(err);
+.catch(err => {
+  // res.redirect('/500');
+  const error=new Error(err);
+  error.httpStatusCode=500;
+  return next(error);
 });
+
 
 };
 
