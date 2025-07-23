@@ -122,7 +122,13 @@ res.redirect('/login');
 })
 
 })
-.catch(err => console.log(err));
+.catch(err => {
+  // res.redirect('/500');
+  const error=new Error(err);
+  error.httpStatusCode=500;
+  return next(error);
+});
+
 }
 
 exports.postSignup = (req, res, next) => {
@@ -235,9 +241,13 @@ crypto.randomBytes(30,(err,buffer)=>{
     });
 
     })
-    .catch(err=>{
-        console.log(err);
-    });
+    .catch(err => {
+  // res.redirect('/500');
+  const error=new Error(err);
+  error.httpStatusCode=500;
+  return next(error);
+});
+
 });
 }
 
@@ -269,9 +279,13 @@ userId:user.id.toString(),
 token:token
 });
   })
-  .catch(err=>{
-    console.log(err);
-  })
+  .catch(err => {
+  // res.redirect('/500');
+  const error=new Error(err);
+  error.httpStatusCode=500;
+  return next(error);
+});
+
     
 }
 exports.postNewPassword=(req,res,next)=>{
@@ -301,8 +315,12 @@ exports.postNewPassword=(req,res,next)=>{
   .then(result=>{
     res.redirect('/login');
   })
-  .catch(err=>{
-    console.log(err);
-  })
+  .catch(err => {
+  // res.redirect('/500');
+  const error=new Error(err);
+  error.httpStatusCode=500;
+  return next(error);
+});
+
 
 }
