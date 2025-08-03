@@ -74,7 +74,8 @@ app.use((error,req,res,next)=>{
     res.status(500).render('500', {
      pageTitle: 'Error!', 
      path: '/500',
-     isAuthenticated:req.session.isLoggedIn 
+     isAuthenticated:req.session.isLoggedIn ,
+      csrfToken: req.csrfToken ? req.csrfToken() : '',
     });
 })
 Product.belongsTo(User,{constraints:true,onDelete:'CASCADE'});
