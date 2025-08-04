@@ -15,6 +15,7 @@ const Order = require('./models/order');
 const OrderItem = require('./models/order-item');
 const csrf=require('csurf');
 const flash=require('connect-flash');
+const multer=require('multer');
 
 const app = express();
 const store = new MySQLStore({
@@ -26,6 +27,22 @@ const store = new MySQLStore({
 });
 
 const csrfProtection=csrf();
+const fileStorage=multer.diskStorage({
+    destination:(req,file,cb)=>{
+        cb(null,'images');
+    },
+    filename:(req,file,cb)=>{
+         const sanitizedFilename = new Date().toISOString().replace(/:/g, '-') + '-' + file.originalname;
+    cb(null, sanitizedFilename);
+    }
+});
+const fileFilter=(req,file,cb)=>{
+    if(file.mimetype==='image/png'||file.mimetype==='image/jpg'||file.mimetype==='image/jpeg'){
+        cb(null,true);
+    }else{
+        cb(null,false);
+    }
+}
 app.set('view engine', 'ejs');
 app.set('views', 'views');
 
@@ -36,6 +53,7 @@ const { name } = require('ejs');
 const { error } = require('console');
 
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(multer({storage:fileStorage,fileFilter:fileFilter}).single('image'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({secret:'my secret',resave:false,saveUninitialized:false, store:store}));
 app.use(csrfProtection);
