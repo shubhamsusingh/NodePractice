@@ -2,6 +2,7 @@ const path=require('path');
 const fs=require('fs');
 const Product = require('../models/product');
 const Cart = require('../models/cart');
+const Order = require('../models/order');
 // const cartItem=require('../models/cart-item');
 const { where } = require('sequelize');
 const e = require('express');
@@ -231,6 +232,18 @@ isAuthenticated: req.session.isLoggedIn
 
 exports.getInvoice = (req,res,next)=>{
   const orderId=req.params.orderId;
+  Order.findByPk(orderId)
+  .then(order=>{
+   
+    if(!order){
+       
+      return next(new Error('No order found'));
+    }
+    if(order.userId.toString()!== req.user.id.toString()){
+      
+      return next(new Error('unauthorized'));
+      
+    }
   const invoiceName='invoice-'+orderId+'.pdf';
   const invoicePath=path.join('data','invoices',invoiceName);
   fs.readFile(invoicePath,(err,data)=>{
@@ -245,4 +258,7 @@ exports.getInvoice = (req,res,next)=>{
 
     res.send(data);
   })
+  })
+  .catch(err=>next(err));
+
 }
